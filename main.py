@@ -93,7 +93,22 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     :return: Tuple of (logits, train_op, cross_entropy_loss)
     """
     # TODO: Implement function
-    return None, None, None
+    # use approach from term 1, project 2
+    #logits = nn_last_layer #LeNet(x)
+    logits = tf.reshape(nn_last_layer, (-1, num_classes))    
+    labels = tf.reshape(correct_label, (-1, num_classes))
+
+    cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels)
+    loss_operation = tf.reduce_mean(cross_entropy)
+    optimizer = tf.train.AdamOptimizer(learning_rate = learning_rate)
+    training_operation = optimizer.minimize(loss_operation)
+
+    # model evaluation
+    #correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(one_hot_y, 1))
+    #accuracy_operation = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    #saver = tf.train.Saver()
+
+    return logits, training_operation, loss_operation
 tests.test_optimize(optimize)
 
 
@@ -113,6 +128,36 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param learning_rate: TF Placeholder for learning rate
     """
     # TODO: Implement function
+    
+    # use approach from term 1, project 2
+
+    """
+    # train the model
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        num_examples = len(X_train)
+        
+        print("Training...")
+        print("learning rate=" + str(rate) + "  ●  batch size=" + 
+                      str(BATCH_SIZE) + "  ●  epochs=" + str(EPOCHS))
+        print()
+        for i in range(EPOCHS):
+            X_train, y_train = shuffle(X_train, y_train)
+            for offset in range(0, num_examples, BATCH_SIZE):
+                end = offset + BATCH_SIZE
+                batch_x, batch_y = X_train[offset:end], y_train[offset:end]
+                sess.run(training_operation, feed_dict={x: batch_x, y: batch_y})
+                
+            validation_accuracy = evaluate(X_valid, y_valid)
+            trainig_accuracy = evaluate(X_train, y_train)
+
+            print("EPOCH {} ...".format(i+1))
+            print("Validation Accuracy = {:.3f}".format(validation_accuracy))
+            print("Training Accuracy   = {:.3f}".format(trainig_accuracy))
+            print()
+    """
+
+
     pass
 tests.test_train_nn(train_nn)
 
