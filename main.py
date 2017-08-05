@@ -149,10 +149,20 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         print("EPOCH {} ...".format(i+1))
         batch_counter = 0
         for image, label in get_batches_fn(batch_size):
+            _, loss = sess.run([train_op, cross_entropy_loss], 
+                                 feed_dict = {input_image:   image, 
+                                              correct_label: label, 
+                                              keep_prob:     1, 
+                                              learning_rate: 0.0001})
+
+            #_, loss = sess.run(train_op, feed_dict={input_image: image, correct_label: label, keep_prob: 1, learning_rate: 0.0001})
+            
             print("    batch {} ...".format(batch_counter+1))
             batch_counter += 1
-            sess.run(train_op, feed_dict={input_image: image, correct_label: label, keep_prob: 1, 
-                                                  learning_rate: 0.0001})
+            print("                loss {:.5f} ...".format(loss))
+
+            #_, loss = sess.run(train_op, feed_dict={input_image: image, correct_label: label, keep_prob: 1, learning_rate: 0.0001})
+
             #does not work!!!
             #sess.run(train_op, feed_dict={input_image: image, correct_label: label, keep_prob: keep_prob, learning_rate: learning_rate})
         
@@ -199,8 +209,8 @@ def run():
     tests.test_for_kitti_dataset(data_dir)
 
     # hyperparameters
-    epochs = 1
-    batch_size =  1
+    epochs = 5
+    batch_size =  50 # to large: 100 --> 23 GB
 
     # Download pretrained vgg model
     helper.maybe_download_pretrained_vgg(data_dir)
