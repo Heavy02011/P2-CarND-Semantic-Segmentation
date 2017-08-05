@@ -59,7 +59,27 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
     # TODO: Implement function
-    return None
+    # following slack message https://carnd.slack.com/archives/C6F0M0AF8/p1501659626810682
+    # TODO: check whether to follow http://cv-tricks.com/image-segmentation/transpose-convolution-in-tensorflow/
+
+    # kernel initializer
+    mykernelinitializer = tf.truncated_normal_initializer(stddev = 0.02)
+
+    # prepare & upsample layer 7
+    fc7 = tf.layers.conv2d(vgg_layer7_out, num_classes, kernel_size=1, strides=(1, 1), kernel_initializer=mykernelinitializer)
+    fc7_up = tf.contrib.layers.conv2d_transpose(fc7, num_classes, kernel_size=4, stride=2, padding='SAME')
+
+    # prepare layer, skip & upsample 4
+    fc4 = tf.layers.conv2d(vgg_layer4_out, num_classes, kernel_size=1, strides=(1, 1), kernel_initializer=mykernelinitializer)
+    fc4_skip = tf.add(fc7_up, fc4)
+    fc4_up = tf.contrib.layers.conv2d_transpose(fc4_skip, num_classes, kernel_size=4, stride=2, padding='SAME')
+
+    # prepare layer, skip & upsample 3
+    fc3 = tf.layers.conv2d(vgg_layer3_out, num_classes, kernel_size=1, strides=(1, 1), kernel_initializer=mykernelinitializer)
+    fc3_skip = tf.add(fc4_up, fc3)
+    fc3_up = tf.contrib.layers.conv2d_transpose(fc3_skip, num_classes, kernel_size=16, stride=8, padding='SAME')
+
+    return fc3_up
 tests.test_layers(layers)
 
 
