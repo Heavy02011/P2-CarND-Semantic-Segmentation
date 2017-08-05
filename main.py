@@ -128,37 +128,39 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param learning_rate: TF Placeholder for learning rate
     """
     # TODO: Implement function
-    
+
     # use approach from term 1, project 2
 
-    """
     # train the model
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        num_examples = len(X_train)
+    #with tf.Session() as sess:
+        #sess.run(tf.global_variables_initializer())
+        #num_examples = len(X_train)
         
-        print("Training...")
-        print("learning rate=" + str(rate) + "  ●  batch size=" + 
-                      str(BATCH_SIZE) + "  ●  epochs=" + str(EPOCHS))
+    print("Training...")
+    print("learning rate=" + str(learning_rate) + "  ●  batch size=" + 
+                  str(batch_size) + "  ●  epochs=" + str(epochs))
+    print()
+    for i in range(epochs):
+        #X_train, y_train = shuffle(X_train, y_train)
+        for image, label in get_batches_fn(batch_size):
+            sess.run(train_op, feed_dict={input_image: image, correct_label: label})
+
+        """
+        for offset in range(0, num_examples, batch_size):
+            end = offset + batch_size
+            batch_x, batch_y = X_train[offset:end], y_train[offset:end]
+            sess.run(training_operation, feed_dict={x: batch_x, y: batch_y})
+            
+        validation_accuracy = evaluate(X_valid, y_valid)
+        trainig_accuracy = evaluate(X_train, y_train)
+
+        print("EPOCH {} ...".format(i+1))
+        print("Validation Accuracy = {:.3f}".format(validation_accuracy))
+        print("Training Accuracy   = {:.3f}".format(trainig_accuracy))
         print()
-        for i in range(EPOCHS):
-            X_train, y_train = shuffle(X_train, y_train)
-            for offset in range(0, num_examples, BATCH_SIZE):
-                end = offset + BATCH_SIZE
-                batch_x, batch_y = X_train[offset:end], y_train[offset:end]
-                sess.run(training_operation, feed_dict={x: batch_x, y: batch_y})
-                
-            validation_accuracy = evaluate(X_valid, y_valid)
-            trainig_accuracy = evaluate(X_train, y_train)
+        """
 
-            print("EPOCH {} ...".format(i+1))
-            print("Validation Accuracy = {:.3f}".format(validation_accuracy))
-            print("Training Accuracy   = {:.3f}".format(trainig_accuracy))
-            print()
-    """
-
-
-    pass
+    #pass
 tests.test_train_nn(train_nn)
 
 
