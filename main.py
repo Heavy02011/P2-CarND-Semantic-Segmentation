@@ -134,12 +134,6 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     # TODO: Implement function
 
     # use approach from term 1, project 2
-
-    # train the model
-    #with tf.Session() as sess:
-        #sess.run(tf.global_variables_initializer())
-        #num_examples = len(X_train)
-        
     start_time = time.time()
 
     print("Training...")
@@ -157,37 +151,23 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                                               keep_prob:     1, 
                                               learning_rate: 0.0001})
 
-            #_, loss = sess.run(train_op, feed_dict={input_image: image, correct_label: label, keep_prob: 1, learning_rate: 0.0001})
-            
-            #print("    batch {} ...".format(batch_counter+1))
-            #batch_counter += 1
-            #print("                loss {:.5f} ...".format(loss))
-            print("    batch {}: loss = {:.5f}".format(batch_counter+1, loss))
+            """
+            _, loss = sess.run([train_op, cross_entropy_loss], 
+                                 feed_dict = {input_image:   image, 
+                                              correct_label: label, 
+                                              keep_prob:     keep_prob.eval(), 
+                                              learning_rate: learning_rate.eval()})
+            """
+
+            #print("    batch {}: loss = {:.5f}".format(batch_counter+1, loss))
+            print("    batch {}:  loss = {:.5f}".format(batch_counter+1, loss))
+            #mylr = sess.run(lr)
+            #print(mylr)
             batch_counter += 1
-            #print("                loss {:.5f} ...".format(loss))
 
         delta = (time.time() - start_time)
         print("time since start = {} s  s/epoch {}".format(delta, delta/(i+1)))
-            #_, loss = sess.run(train_op, feed_dict={input_image: image, correct_label: label, keep_prob: 1, learning_rate: 0.0001})
-
-            #does not work!!!
-            #sess.run(train_op, feed_dict={input_image: image, correct_label: label, keep_prob: keep_prob, learning_rate: learning_rate})
-        
-        """
-        for offset in range(0, num_examples, batch_size):
-            end = offset + batch_size
-            batch_x, batch_y = X_train[offset:end], y_train[offset:end]
-            sess.run(training_operation, feed_dict={x: batch_x, y: batch_y})
-        """ 
-            #validation_accuracy = 0 # evaluate(X_valid, y_valid)
-            #training_accuracy = 0 #evaluate(X_train, y_train)
-
-            #print("Validation Accuracy = {:.3f}".format(validation_accuracy))
-            #print("Training Accuracy   = {:.3f}".format(training_accuracy))
-            #print()
-        
-
-    #pass
+       
 tests.test_train_nn(train_nn)
 
 """
@@ -216,8 +196,14 @@ def run():
     tests.test_for_kitti_dataset(data_dir)
 
     # hyperparameters
-    epochs = 10
-    batch_size = 10 #50 # to large: 100 --> 23 GB
+    epochs = 1 # 10
+    batch_size = 1 #10 #50 # to large: 100 --> 23 GB
+    #keep_prob 0.5, 1
+
+    # after 1 epoch
+    # lr = 0.0001  keep_prob = 0.5   batch_size = 1/289 loss = 0.50866   time 1978= s/epoch   
+    # lr = 0.0001    keep_prob = 0     batch = 1/289: loss =      time = s/epoch   
+
 
     # Download pretrained vgg model
     helper.maybe_download_pretrained_vgg(data_dir)
@@ -243,6 +229,7 @@ def run():
         input_image, keep_prob, vgg_layer3, vgg_layer4, vgg_layer7 = load_vgg(sess, vgg_path)
         nn_last_layer = layers(vgg_layer3, vgg_layer4, vgg_layer7, num_classes)
         learning_rate = tf.placeholder(dtype = tf.float32)
+        #keep_prob = tf.placeholder(dtype = tf.float32)
         correct_label = tf.placeholder(dtype = tf.float32, shape = (None, None, None, num_classes))
         logits, training_operation, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, num_classes)
 
