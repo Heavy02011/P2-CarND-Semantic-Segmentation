@@ -4,6 +4,7 @@ import helper
 import warnings
 from distutils.version import LooseVersion
 import project_tests as tests
+import time
 
 #from tensorflow.python.client import graph_util
 #from tensorflow.python.client import graph_utils
@@ -139,12 +140,13 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
         #sess.run(tf.global_variables_initializer())
         #num_examples = len(X_train)
         
+    start_time = time.time()
+
     print("Training...")
     print("learning rate=" + str(learning_rate) + "  ●  batch size=" + 
                   str(batch_size) + "  ●  epochs=" + str(epochs))
     print()
     for i in range(epochs):
-        #X_train, y_train = shuffle(X_train, y_train)
         print()
         print("EPOCH {} ...".format(i+1))
         batch_counter = 0
@@ -157,10 +159,15 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
 
             #_, loss = sess.run(train_op, feed_dict={input_image: image, correct_label: label, keep_prob: 1, learning_rate: 0.0001})
             
-            print("    batch {} ...".format(batch_counter+1))
+            #print("    batch {} ...".format(batch_counter+1))
+            #batch_counter += 1
+            #print("                loss {:.5f} ...".format(loss))
+            print("    batch {}: loss = {:.5f}".format(batch_counter+1, loss))
             batch_counter += 1
-            print("                loss {:.5f} ...".format(loss))
+            #print("                loss {:.5f} ...".format(loss))
 
+        delta = (time.time() - start_time)
+        print("time since start = {} s  s/epoch {}".format(delta, delta/(i+1)))
             #_, loss = sess.run(train_op, feed_dict={input_image: image, correct_label: label, keep_prob: 1, learning_rate: 0.0001})
 
             #does not work!!!
@@ -209,8 +216,8 @@ def run():
     tests.test_for_kitti_dataset(data_dir)
 
     # hyperparameters
-    epochs = 5
-    batch_size =  50 # to large: 100 --> 23 GB
+    epochs = 10
+    batch_size = 10 #50 # to large: 100 --> 23 GB
 
     # Download pretrained vgg model
     helper.maybe_download_pretrained_vgg(data_dir)
