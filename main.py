@@ -196,7 +196,7 @@ def run():
     tests.test_for_kitti_dataset(data_dir)
 
     # hyperparameters
-    epochs = 1 # 10
+    epochs = 20
     batch_size = 1 #10 #50 # to large: 100 --> 23 GB
     #keep_prob 0.5, 1
 
